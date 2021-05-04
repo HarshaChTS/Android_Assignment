@@ -1,2 +1,3 @@
 # CG-final-project
-Particle effect
+## Particle effect
+Final project for CS312 Computer Graphics class.
