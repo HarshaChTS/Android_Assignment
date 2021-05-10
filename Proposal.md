@@ -18,3 +18,7 @@ This effect is unique because it is tied directly to the object in the scene tha
 6. Making triangular particles to be 3-dimentional and animated with gravity
 
 ### Algorithms, data structures and/or background math:
+For this effect, I will be using the general algorithms and data structures that we used for our other particle effects. 
+ - for fire explosion: sprite sheet
+ - for smoke particles: puff billboard with blending
+ - for shattered pieces: object pool
