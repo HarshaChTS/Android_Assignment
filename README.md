@@ -1,10 +1,26 @@
 # Computer Graphis Final Project
-## Party on Demand (Interactive Firework Explosions)
+## Party on Demand 🎉 (Interactive Firework Explosions)
 
-
-OpenGL interactive firework explosion spawner that creates a firework based on user's mouse click.
-
+For my final project, I have created OpenGL interactive firework explosion spawner that creates a firework based on user's mouse click. 
 ![Demo](fireworks.gif)
+
+To create this particle effect, I have created one particle system class that simulates firework explosion and a dynamically sized vector array that holds all particle systems that we want to spawn. My program's work can be conceptually divided into 2 sections -- particle system *spawning* and particle system *animation*.
+
+### Particle System Spawning
+
+Once ```mouse_button_callback()``` function gets triggered (aka when the user left-clicks on the screen), my program:
+1. picks up the coordinates of the click (aka explosion point) and normalizes them in order to work with the particle system positioning
+2. creates a MyParticleSystem object, passing the explosion point, trail offset, and color as a property of the created object
+3. adds the newly created particle system to the global array which holds all particle systems that we need to "fire"
+4. initializes the particle system
+
+### Particle System Animation
+As ```mouse_button_callback()``` function keeps adding new particle systems to the queue of those that need to be animated on the background, the main while loop is where all the systems actually get updated and drawn. With every iteration of the main while() loop, we go through the global array of particle systems, updating and redrawing each of them one by one.
+
+### Individual Particle Animation
+Because the firework first shoots the "sparks" up in the air and only then explodes, each individual particle has two stages of animation: *initial trailing* and *explosion*. Also, particles are animated with gravity and mass.
+- initial trailing: particle's initial position is getting passed from ```mouse_button_callback()``` function to ensure the firework explodes where we want it to explode. Initial velocity is set 
+
 
 ## How to build
 
