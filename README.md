@@ -2,7 +2,8 @@
 ## Party on Demand (Interactive Firework Explosions)
 
 
-OpenGL interactive firework explosion spawner.
+OpenGL interactive firework explosion spawner that creates a firework based on user's mouse click.
+
 ![Demo](fireworks.gif)
 
 ## How to build
