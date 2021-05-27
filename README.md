@@ -1,8 +1,8 @@
-# Computer Graphis Final Project
+# Computer Graphics Final Project
 ## Firework Particle Effect
 
 
-OPenGL particle effect simulating firework explosions.
+OpenGL particle effect simulating firework explosions.
 
 ## How to build
 
