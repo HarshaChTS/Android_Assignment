@@ -27,7 +27,7 @@ void MyParticleSystem::createParticles(int size)
 	   
 	   p.vel = vec3(0, -2.0f + random_float(0, 0.05f), 0);
 	   
-	   p.color = vec4(fw_color.r + random_float(0, 0.1f), fw_color.g + random_float(0, 0.1f), fw_color.b + random_float(0, 0.1f), 0.9f);
+	   p.color = vec4(fw_color.r + random_float(0, 0.1f), fw_color.g + random_float(0, 0.1f), fw_color.b + random_float(0, 0.1f), 0.95f);
 
 	   mParticles.push_back(p); // add to particles
    }
@@ -35,25 +35,17 @@ void MyParticleSystem::createParticles(int size)
 
 void MyParticleSystem::explodeParticles(int size) {
 
-	int count = -10;
+	
 	for (int i = 0; i < size; i++) {
 
 		Particle p;
 		p.pos = offset + vec3(0,-3,0);
-		//p.pos.y = offset.y + random_float(0, 0.3f);
 		p.size = 0.1f;
 
 		p.vel = random_unit_cube();
-
-
-		//p.vel = vec3(random_float(0, 1), -1 * abs(random_float(0.5, 1)), random_float(0, 1));
-
-		p.color = vec4(fw_color.r + random_float(0, 0.1f), fw_color.g + random_float(0, 0.1f), fw_color.b + random_float(0, 0.1f), 1);
+		p.color = vec4(fw_color.r + random_float(0, 0.05f), fw_color.g + random_float(0, 0.05f), fw_color.b + random_float(0, 0.05f), 1);
 
 		mParticles.push_back(p); // add to particles
-		if (i % 10 == 0) {
-			count++;
-		}
 	}
 }
 
@@ -67,6 +59,11 @@ void MyParticleSystem::removeTrail() {
 }
 void MyParticleSystem::update(float dt)
 {
+
+	if (count == 3200) {
+		explodeParticles(100);
+	}
+
 	vec3 explosion_pos = offset + vec3(0, -3, 0);
 	for (int i = 0; i < mParticles.size(); i++) {
 		
@@ -85,7 +82,6 @@ void MyParticleSystem::update(float dt)
 		mParticles[i] = p;
 
 	}
-
 
 	for (int i = 1; i < mParticles.size(); i++) {
 

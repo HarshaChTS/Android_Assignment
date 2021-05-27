@@ -1,8 +1,9 @@
 # Computer Graphis Final Project
-## Firework Particle Effect
+## Party on Demand (Interactive Firework Explosions)
 
 
-OPenGL particle effect simulating firework explosions.
+OpenGL interactive firework explosion spawner.
+![Demo](fireworks.gif)
 
 ## How to build
 

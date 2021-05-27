@@ -20,16 +20,16 @@ ParticleSystem::ParticleSystem()
    fire_texture = -1;
    smoke_texture = -1;
    piece_texture = -1;
-   delay_count = 0;
+   count = 0;
 }
 
 ParticleSystem::~ParticleSystem()
 {
 }
 
-void ParticleSystem::set_delay_count(int count)
+void ParticleSystem::set_delay_count(int count2)
 {
-    delay_count += count;
+    count += count2;
 }
 
 void ParticleSystem::init(int size)

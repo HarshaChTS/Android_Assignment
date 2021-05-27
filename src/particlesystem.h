@@ -16,6 +16,7 @@ namespace agl {
       float mass;
    };
 
+
    class ParticleSystem {
    public:
       ParticleSystem();
@@ -30,9 +31,9 @@ namespace agl {
 
       virtual void draw_object();
       virtual void delete_object();
-      virtual void set_delay_count(int count);
+      virtual void set_delay_count(int count2);
       static Renderer& GetRenderer();
-      int delay_count;
+      int count;
 
 
    protected:

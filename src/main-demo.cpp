@@ -14,13 +14,17 @@ using namespace std;
 using namespace glm;
 using namespace agl;
 
+std::vector<MyParticleSystem> fireworkSystems;
+
+
 MyParticleSystem theSystem;
 MyParticleSystem theSystem2;
 MyParticleSystem theSystem3;
 MyParticleSystem theSystem4;
 
-
-
+float x_explos;
+float y_explos;
+bool clicked;
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
@@ -48,6 +52,31 @@ static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 
 static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
+    double xpos, ypos;
+    glfwGetCursorPos(window, &xpos, &ypos);
+
+    // TODO: CAmera controls
+
+    int state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
+    if (state == GLFW_PRESS)
+    {
+        clicked = true;
+        x_explos = float(xpos)/(-112.5f)+4;
+        y_explos = float(ypos)/(112.5f) - 4;
+        cout << "click " << x_explos << " " << y_explos <<endl;
+
+        MyParticleSystem system;
+        system.setOffset(vec3(x_explos, y_explos, 0) + vec3(0,3,0));
+        system.setColor(vec3(abs(random_float(0, 1)), abs(random_float(0, 1)), abs(random_float(0, 1))));
+        system.init(100);
+        system.count = 0;
+        fireworkSystems.push_back(system);
+        system.draw();
+
+    }
+    else {
+        clicked = false;
+    }
 }
 
 static void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
@@ -131,9 +160,11 @@ int main(int argc, char** argv)
    glClearColor(0, 0, 0, 1);
 
 
-   theSystem.setOffset(vec3(1.5,2,0));
+
+   /*theSystem.setOffset(vec3(1.5,2,0));
    theSystem.setColor(vec3(0.6f, 0.2f, 0.8f));
    theSystem.init(100); 
+   theSystem.count = 0;
    
    theSystem2.setOffset(vec3(-2, 1, 0));
    theSystem2.setColor(vec3(0.2f, 0.5f, 0.9f));
@@ -145,15 +176,14 @@ int main(int argc, char** argv)
 
    theSystem4.setOffset(vec3(2, 1, 0));
    theSystem4.setColor(vec3(0.87f, 0.34f, 0.4f));
-   theSystem4.init(100);
+   theSystem4.init(100);*/
 
    float fov = radians(45.0f);
    ParticleSystem::GetRenderer().perspective(fov, 1.0f, 0.1f, 10.0f);
    ParticleSystem::GetRenderer().lookAt(vec3(0, 0, 8), vec3(0, 0, 0));
 
    float lastTime = glfwGetTime();
-
-   theSystem.draw();
+   //theSystem.draw();
 
    int counter = 0;
    while (!glfwWindowShouldClose(window))
@@ -163,9 +193,22 @@ int main(int argc, char** argv)
       float dt = glfwGetTime() - lastTime;
       lastTime = glfwGetTime();
 
+      for (int i = 0; i < fireworkSystems.size(); i++) {
+          //MyParticleSystem cur_syst = fireworkSystems[i];
+          fireworkSystems[i].update(dt);
+          fireworkSystems[i].draw();
+          fireworkSystems[i].count++;
+
+      }
+
+
       //1st firework starts right away
-      theSystem.update(dt);
+     /* theSystem.update(dt);
       theSystem.draw();
+      theSystem.count++;*/
+
+      /*
+      
       
       //initiate second firework with a slight delay
       if (counter == 3500) {
@@ -211,7 +254,7 @@ int main(int argc, char** argv)
           theSystem4.explodeParticles(200);
       }
 
-
+      */
 
       // Swap front and back buffers
       glfwSwapBuffers(window);
