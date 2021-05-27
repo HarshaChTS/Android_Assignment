@@ -22,6 +22,9 @@ Because the firework first shoots the "sparks" up in the air and only then explo
 - **initial trailing**: particle's initial position is getting passed from ```mouse_button_callback()``` function to ensure the firework explodes where we want it to explode. Initial velocity is set to shoot the particles upward.
 - **explosion**: every particle system has a ```counter``` property that gets updated in the main ```while()``` loop and lets the ```update()``` function know when to start the explosion. Once ```counter``` reaches a certain number, ```explodeParticles()``` function goes through each particle and changes their positions and velocities from shooting upwards to shooting along the randomized unit square vectors, which simulates the explosion.
 
+### Future improvements
+- Setting velocities and offsets in the *explosion* stage of the particle to be animated to trail along a fixed number of lines, just like the firefor does, and not just randomly.
+- Reusing particles systems that have already exploded and are out of the frame, instead of infinitely creating new ones.
 
 ## How to build
 
