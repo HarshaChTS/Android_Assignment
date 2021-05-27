@@ -1,5 +1,5 @@
-# Computer Graphis Final Project
-## Party on Demand 🎉 (Interactive Firework Explosions)
+# Party on Demand 🎉 (Interactive Firework Explosions)
+## Demo
 
 For my final project, I have created OpenGL interactive firework explosion spawner that creates a firework based on user's mouse click. 
 ![Demo](fireworks.gif)
@@ -15,11 +15,12 @@ Once ```mouse_button_callback()``` function gets triggered (aka when the user le
 4. initializes the particle system
 
 ### Particle System Animation
-As ```mouse_button_callback()``` function keeps adding new particle systems to the queue of those that need to be animated on the background, the main while loop is where all the systems actually get updated and drawn. With every iteration of the main while() loop, we go through the global array of particle systems, updating and redrawing each of them one by one.
+As ```mouse_button_callback()``` function keeps adding new particle systems to the queue of those that need to be animated on the background, the main while loop is where all the systems actually get updated and drawn. With every iteration of the main ```while()``` loop, we go through the global array of particle systems, updating and redrawing each of them one by one.
 
 ### Individual Particle Animation
 Because the firework first shoots the "sparks" up in the air and only then explodes, each individual particle has two stages of animation: *initial trailing* and *explosion*. Also, particles are animated with gravity and mass.
-- initial trailing: particle's initial position is getting passed from ```mouse_button_callback()``` function to ensure the firework explodes where we want it to explode. Initial velocity is set 
+- **initial trailing**: particle's initial position is getting passed from ```mouse_button_callback()``` function to ensure the firework explodes where we want it to explode. Initial velocity is set to shoot the particles upward.
+- **explosion**: every particle system has a ```counter``` property that gets updated in the main ```while()``` loop and lets the ```update()``` function know when to start the explosion. Once ```counter``` reaches a certain number, ```explodeParticles()``` function goes through each particle and changes their positions and velocities from shooting upwards to shooting along the randomized unit square vectors, which simulates the explosion.
 
 
 ## How to build
