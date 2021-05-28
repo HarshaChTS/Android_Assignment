@@ -2,6 +2,7 @@
 ## Demo
 
 For my final project, I have created OpenGL interactive firework explosion spawner that creates a firework based on user's mouse click. 
+
 ![Demo](fireworks.gif)
 
 To create this particle effect, I have created one particle system class that simulates firework explosion and a dynamically sized vector array that holds all particle systems that we want to spawn. My program's work can be conceptually divided into 2 sections -- particle system *spawning* and particle system *animation*.
