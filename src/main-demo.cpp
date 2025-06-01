@@ -18,9 +18,18 @@ MyParticleSystem theSystem2;
 MyParticleSystem theSystem3;
 MyParticleSystem theSystem4;
 
+bool clicked = false;
 float x_explos;
 float y_explos;
-bool clicked;
+
+// Explosion flags to trigger only once
+bool exploded1 = false;
+bool exploded2 = false;
+bool exploded3 = false;
+bool exploded4 = false;
+
+// For click-spawned fireworks explosions tracking
+std::vector<bool> explodedClicks;
 
 static void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods)
 {
@@ -35,11 +44,9 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
 
 static void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 {
-    // Prevent a divide by zero
     if (height == 0)
         height = 1;
 
-    // Set Viewport to window dimensions
     glViewport(0, 0, width, height);
     ParticleSystem::GetRenderer().perspective(radians(60.0f), 1.0f, 0.1f, 100.0f);
 }
@@ -50,14 +57,11 @@ static void scroll_callback(GLFWwindow *window, double xoffset, double yoffset)
 
 static void mouse_button_callback(GLFWwindow *window, int button, int action, int mods)
 {
-    double xpos, ypos;
-    glfwGetCursorPos(window, &xpos, &ypos);
-
-    // TODO: CAmera controls
-
-    int state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
-    if (state == GLFW_PRESS)
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
     {
+        double xpos, ypos;
+        glfwGetCursorPos(window, &xpos, &ypos);
+
         clicked = true;
         x_explos = float(xpos) / (-112.5f) + 4;
         y_explos = float(ypos) / (112.5f) - 4;
@@ -68,10 +72,11 @@ static void mouse_button_callback(GLFWwindow *window, int button, int action, in
         system.setColor(vec3(abs(random_float(0, 1)), abs(random_float(0, 1)), abs(random_float(0, 1))));
         system.init(100);
         system.count = 0;
+
         fireworkSystems.push_back(system);
-        system.draw();
+        explodedClicks.push_back(false); // no explosion triggered yet for this system
     }
-    else
+    else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE)
     {
         clicked = false;
     }
@@ -122,13 +127,11 @@ int main(int argc, char **argv)
         return -1;
     }
 
-    // Explicitly ask for a 4.0 context
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    /* Create a windowed mode window and its OpenGL context */
     float width = 900;
     float height = 900;
     window = glfwCreateWindow(width, height, "Particle Viewer", NULL, NULL);
@@ -168,102 +171,104 @@ int main(int argc, char **argv)
     theSystem2.setOffset(vec3(-2, 1, 0));
     theSystem2.setColor(vec3(0.2f, 0.5f, 0.9f));
     theSystem2.init(100);
+    theSystem2.count = 0;
 
     theSystem3.setOffset(vec3(0.5f, 1.5, 0));
     theSystem3.setColor(vec3(0.4f, 0.9f, 0.4f));
     theSystem3.init(100);
+    theSystem3.count = 0;
 
     theSystem4.setOffset(vec3(2, 1, 0));
     theSystem4.setColor(vec3(0.87f, 0.34f, 0.4f));
     theSystem4.init(100);
+    theSystem4.count = 0;
 
     float fov = radians(45.0f);
     ParticleSystem::GetRenderer().perspective(fov, 1.0f, 0.1f, 10.0f);
     ParticleSystem::GetRenderer().lookAt(vec3(0, 0, 8), vec3(0, 0, 0));
 
     float lastTime = glfwGetTime();
-    theSystem.draw();
 
     int counter = 0;
     while (!glfwWindowShouldClose(window))
     {
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear the buffers
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         float dt = glfwGetTime() - lastTime;
         lastTime = glfwGetTime();
 
+        // Update and draw click-spawned fireworks
         for (int i = 0; i < fireworkSystems.size(); i++)
         {
-            // MyParticleSystem cur_syst = fireworkSystems[i];
             fireworkSystems[i].update(dt);
             fireworkSystems[i].draw();
             fireworkSystems[i].count++;
+
+            // Explode click fireworks after some lifetime (e.g., count == 100)
+            if (fireworkSystems[i].count == 100 && !explodedClicks[i])
+            {
+                fireworkSystems[i].explodeParticles(150);
+                explodedClicks[i] = true;
+            }
         }
 
-        // 1st firework starts right away
+        // 1st firework always updates/draws
         theSystem.update(dt);
         theSystem.draw();
         theSystem.count++;
 
-        // initiate second firework with a slight delay
-        if (counter == 3500)
+        // Explode 1st firework once after counter >= 3500
+        if (counter >= 3500 && !exploded1)
         {
-            theSystem2.draw();
+            theSystem.explodeParticles(100);
+            exploded1 = true;
         }
-        else if (counter > 3500)
+
+        // Start 2nd firework after counter >= 3500
+        if (counter >= 3500)
         {
             theSystem2.update(dt);
             theSystem2.draw();
+            theSystem2.count++;
+        }
+        // Explode 2nd firework once after counter >= 6800
+        if (counter >= 6800 && !exploded2)
+        {
+            theSystem2.explodeParticles(250);
+            exploded2 = true;
         }
 
-        // initiate third firework with a slight delay
-        if (counter == 6000)
-        {
-            theSystem3.draw();
-        }
-        else if (counter > 6000)
+        // Start 3rd firework after counter >= 6000
+        if (counter >= 6000)
         {
             theSystem3.update(dt);
             theSystem3.draw();
+            theSystem3.count++;
+        }
+        // Explode 3rd firework once after counter >= 8000
+        if (counter >= 8000 && !exploded3)
+        {
+            theSystem3.explodeParticles(100);
+            exploded3 = true;
         }
 
-        // initiate third firework with a slight delay
-        if (counter == 8500)
-        {
-            theSystem4.draw();
-        }
-        else if (counter > 8500)
+        // Start 4th firework after counter >= 8500
+        if (counter >= 8500)
         {
             theSystem4.update(dt);
             theSystem4.draw();
+            theSystem4.count++;
         }
-
-        // explode 1st firework
-        if (counter == 3500)
-        {
-            theSystem.explodeParticles(100);
-        }
-        // explode 2nd firework
-        if (counter == 6800)
-        {
-            theSystem2.explodeParticles(250);
-        }
-        // explode 3rd firework
-        if (counter == 8000)
-        {
-            theSystem3.explodeParticles(100);
-        }
-        // explode 4th firework
-        if (counter == 10000)
+        // Explode 4th firework once after counter >= 10000
+        if (counter >= 10000 && !exploded4)
         {
             theSystem4.explodeParticles(200);
+            exploded4 = true;
         }
 
-        // Swap front and back buffers
         glfwSwapBuffers(window);
-
-        // Poll for and process events
         glfwPollEvents();
+
         counter++;
     }
 
