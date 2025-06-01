@@ -13,7 +13,7 @@ static void PrintShaderErrors(GLuint id, const std::string label)
    glGetShaderiv(id, GL_INFO_LOG_LENGTH, &logLen);
    if (logLen > 0)
    {
-      char* log = (char*)malloc(logLen);
+      char *log = (char *)malloc(logLen);
       GLsizei written;
       glGetShaderInfoLog(id, logLen, &written, log);
       std::cerr << "Shader log: " << log << std::endl;
@@ -35,25 +35,36 @@ bool Renderer::initialized() const
    return mInitialized;
 }
 
-
 vec3 Renderer::cameraPosition() const
 {
    return mLookfrom;
 }
 
-void Renderer::init(const std::string& vertex, const std::string& fragment)
+void Renderer::init(const std::string &vertex, const std::string &fragment)
 {
    mInitialized = true;
    const float positions[] =
-   {
-       0.0f, 0.0f, 0.0f,
-       1.0f, 0.0f, 0.0f,
-       0.0f, 1.0f, 0.0f,
+       {
+           0.0f,
+           0.0f,
+           0.0f,
+           1.0f,
+           0.0f,
+           0.0f,
+           0.0f,
+           1.0f,
+           0.0f,
 
-       1.0f, 0.0f, 0.0f,
-       1.0f, 1.0f, 0.0f,
-       0.0f, 1.0f, 0.0f,
-   };
+           1.0f,
+           0.0f,
+           0.0f,
+           1.0f,
+           1.0f,
+           0.0f,
+           0.0f,
+           1.0f,
+           0.0f,
+       };
 
    glGenBuffers(1, &mVboPosId);
    glBindBuffer(GL_ARRAY_BUFFER, mVboPosId);
@@ -62,9 +73,9 @@ void Renderer::init(const std::string& vertex, const std::string& fragment)
    glGenVertexArrays(1, &mVaoId);
    glBindVertexArray(mVaoId);
 
-   glEnableVertexAttribArray(0); // 0 -> Sending VertexPositions to array #0 in the active shader
+   glEnableVertexAttribArray(0);             // 0 -> Sending VertexPositions to array #0 in the active shader
    glBindBuffer(GL_ARRAY_BUFFER, mVboPosId); // always bind before setting data
-   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (GLubyte*)NULL);
+   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (GLubyte *)NULL);
 
    mShaderId = loadShader(vertex, fragment);
 }
@@ -74,12 +85,12 @@ void Renderer::blendMode(BlendMode mode)
    if (mode == ADD)
    {
       glEnable(GL_BLEND);
-      glBlendFunc(GL_SRC_ALPHA, GL_ONE);// Additive blend
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE); // Additive blend
    }
    else if (mode == ALPHA)
    {
       glEnable(GL_BLEND);
-      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); //Alpha blend
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // Alpha blend
    }
    else
    {
@@ -97,10 +108,10 @@ void Renderer::ortho(float minx, float maxx, float miny, float maxy, float minz,
    mProjectionMatrix = glm::ortho(minx, maxx, miny, maxy, minz, maxz);
 }
 
-void Renderer::lookAt(const vec3& lookfrom, const vec3& lookat)
+void Renderer::lookAt(const vec3 &lookfrom, const vec3 &lookat)
 {
    mLookfrom = lookfrom;
-   mViewMatrix = glm::lookAt(lookfrom, lookat, vec3(0,1,0));
+   mViewMatrix = glm::lookAt(lookfrom, lookat, vec3(0, 1, 0));
 }
 
 void Renderer::begin(GLuint texIf, BlendMode mode)
@@ -120,41 +131,42 @@ void Renderer::begin(GLuint texIf, BlendMode mode)
    glUniform1i(locId, 0);
    glUniform1i(locId2, 1);
 
-
    glBindVertexArray(mVaoId);
    glEnableVertexAttribArray(0); // 0 -> Sending VertexPositions to array #0 in the active shader
 }
 
-void Renderer::quad(const glm::vec3& pos, const glm::vec4& color, float size)
+void Renderer::quad(const glm::vec3 &pos, const glm::vec4 &color, float size)
 {
    assert(mInitialized);
-
 
    glUniform3f(glGetUniformLocation(mShaderId, "uOffset"), pos[0], pos[1], pos[2]);
    glUniform4f(glGetUniformLocation(mShaderId, "uColor"), color[0], color[1], color[2], color[3]);
    glUniform1f(glGetUniformLocation(mShaderId, "uSize"), size);
 
-   glDrawArrays(GL_TRIANGLES, 0, 6);  
+   glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
-void Renderer::fire(const glm::vec3& pos, const glm::vec4& color, float size)
+void Renderer::fire(const glm::vec3 &pos, const glm::vec4 &color, float size)
 {
-    assert(mInitialized);
-    glActiveTexture(GL_TEXTURE1);
-    glUniform3f(glGetUniformLocation(mShaderId, "uOffset"), pos[0], pos[1], pos[2]);
-    glUniform4f(glGetUniformLocation(mShaderId, "uColor"), color[0], color[1], color[2], color[3]);
-    glUniform1f(glGetUniformLocation(mShaderId, "uSize"), size);
-    /*
-    glUniform1f(glGetUniformLocation(mShaderId, "uRows"), 4);
-    glUniform1f(glGetUniformLocation(mShaderId, "uCols"), 8);
-    glUniform1f(glGetUniformLocation(mShaderId, "uTime"), 0);*/
-    //glUniform1f(glGetUniformLocation(mShaderId, "uTimeOffset"), 0);
+   assert(mInitialized);
 
-    /*glUniform3f(glGetUniformLocation(mShaderId, "uOffset"), pos[0], pos[1], pos[2]);
-    glUniform4f(glGetUniformLocation(mShaderId, "uColor"), color[0], color[1], color[2], color[3]);
-    glUniform1f(glGetUniformLocation(mShaderId, "uSize"), size);*/
+   GLuint mFireTexId = loadTexture("textures/ParticleFirecloud.png");
 
-    glDrawArrays(GL_TRIANGLES, 0, 6);
+   // Set active texture to unit 1 and bind the fire texture
+   glActiveTexture(GL_TEXTURE1);
+   glBindTexture(GL_TEXTURE_2D, mFireTexId);
+
+   // Set uniforms
+   glUniform1i(glGetUniformLocation(mShaderId, "image"), 0);  // Use texture unit 1 for fire texture
+   glUniform1i(glGetUniformLocation(mShaderId, "image2"), 1); // Use texture unit 2 for the second texture
+   glUniform3f(glGetUniformLocation(mShaderId, "uOffset"), pos[0], pos[1], pos[2]);
+   glUniform4f(glGetUniformLocation(mShaderId, "uColor"), color[0], color[1], color[2], color[3]);
+   glUniform1f(glGetUniformLocation(mShaderId, "uSize"), size);
+   glUniform1f(glGetUniformLocation(mShaderId, "uRows"), 4);
+   glUniform1f(glGetUniformLocation(mShaderId, "uCols"), 8);
+   glUniform1f(glGetUniformLocation(mShaderId, "uTime"), glfwGetTime()); // For animation
+
+   glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
 void Renderer::end()
@@ -163,53 +175,19 @@ void Renderer::end()
    glUseProgram(0);
 }
 
-
-GLuint Renderer::loadTexture(const std::string& filename)
+GLuint Renderer::loadTexture(const std::string &filename)
 {
    Image image;
    image.load(filename);
-   
-   /*if (textureId == 0) {
-       glEnable(GL_TEXTURE0);
-       glActiveTexture(GL_TEXTURE0);
-
-       GLuint texId;
-       glGenTextures(1, &texId);
-       glBindTexture(GL_TEXTURE_2D, texId);
-       glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA8, image.width(), image.height());
-       glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, image.width(), image.height(),
-           GL_RGBA, GL_UNSIGNED_BYTE, image.data());
-
-       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-       return texId;
-   }
-
-   else if (textureId==1){
-       glEnable(GL_TEXTURE1);
-       glActiveTexture(GL_TEXTURE1);
-
-       GLuint texId;
-       glGenTextures(1, &texId);
-       glBindTexture(GL_TEXTURE_2D, texId);
-       glTexStorage2D(GL_TEXTURE_2D, 2, GL_RGBA8, image.width(), image.height());
-       glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, image.width(), image.height(),
-           GL_RGBA, GL_UNSIGNED_BYTE, image.data());
-
-       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-       return texId;
-   }*/
-   glEnable(GL_TEXTURE0);
-   glActiveTexture(GL_TEXTURE0);
 
    GLuint texId;
    glGenTextures(1, &texId);
+   glActiveTexture(GL_TEXTURE0);
    glBindTexture(GL_TEXTURE_2D, texId);
+
    glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA8, image.width(), image.height());
    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, image.width(), image.height(),
-      GL_RGBA, GL_UNSIGNED_BYTE, image.data());
+                   GL_RGBA, GL_UNSIGNED_BYTE, image.data());
 
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -217,8 +195,22 @@ GLuint Renderer::loadTexture(const std::string& filename)
    return texId;
 }
 
+static void PrintProgramErrors(GLuint id, const std::string &label)
+{
+   std::cerr << label << " failed\n";
+   GLint logLen;
+   glGetProgramiv(id, GL_INFO_LOG_LENGTH, &logLen);
+   if (logLen > 0)
+   {
+      char *log = (char *)malloc(logLen);
+      GLsizei written;
+      glGetProgramInfoLog(id, logLen, &written, log);
+      std::cerr << "Program log: " << log << std::endl;
+      free(log);
+   }
+}
 
-std::string Renderer::loadShaderFromFile(const std::string& fileName)
+std::string Renderer::loadShaderFromFile(const std::string &fileName)
 {
    std::ifstream file(fileName);
    if (!file)
@@ -234,11 +226,11 @@ std::string Renderer::loadShaderFromFile(const std::string& fileName)
    return code.str();
 }
 
-GLuint Renderer::loadShader(const std::string& vertex, const std::string& fragment)
+GLuint Renderer::loadShader(const std::string &vertex, const std::string &fragment)
 {
    GLint result;
    std::string vertexShader = loadShaderFromFile(vertex);
-   const char* vertexShaderRaw = vertexShader.c_str();
+   const char *vertexShaderRaw = vertexShader.c_str();
    GLuint vshaderId = glCreateShader(GL_VERTEX_SHADER);
    glShaderSource(vshaderId, 1, &vertexShaderRaw, NULL);
    glCompileShader(vshaderId);
@@ -250,7 +242,7 @@ GLuint Renderer::loadShader(const std::string& vertex, const std::string& fragme
    }
 
    std::string fragmentShader = loadShaderFromFile(fragment);
-   const char* fragmentShaderRaw = fragmentShader.c_str();
+   const char *fragmentShaderRaw = fragmentShader.c_str();
    GLuint fshaderId = glCreateShader(GL_FRAGMENT_SHADER);
    glShaderSource(fshaderId, 1, &fragmentShaderRaw, NULL);
    glCompileShader(fshaderId);
@@ -265,7 +257,8 @@ GLuint Renderer::loadShader(const std::string& vertex, const std::string& fragme
    glAttachShader(shaderId, vshaderId);
    glAttachShader(shaderId, fshaderId);
    glLinkProgram(shaderId);
-   glGetShaderiv(shaderId, GL_LINK_STATUS, &result);
+   glGetProgramiv(shaderId, GL_LINK_STATUS, &result);
+
    if (result == GL_FALSE)
    {
       PrintShaderErrors(shaderId, "Shader link");
@@ -274,9 +267,8 @@ GLuint Renderer::loadShader(const std::string& vertex, const std::string& fragme
    return shaderId;
 }
 
- //For rendering animated sprites
-   /*glUniform1f(glGetUniformLocation(shaderId, "uRows"), 4);
-   glUniform1f(glGetUniformLocation(shaderId, "uCols"), 8);
-   glUniform1f(glGetUniformLocation(shaderId, "uTime"), 0);
-   glUniform1f(glGetUniformLocation(shaderId, "uTimeOffset"), 0);*/
-
+// For rendering animated sprites
+/*glUniform1f(glGetUniformLocation(shaderId, "uRows"), 4);
+glUniform1f(glGetUniformLocation(shaderId, "uCols"), 8);
+glUniform1f(glGetUniformLocation(shaderId, "uTime"), 0);
+glUniform1f(glGetUniformLocation(shaderId, "uTimeOffset"), 0);*/

@@ -7,20 +7,20 @@ using namespace agl;
 
 Renderer ParticleSystem::theRenderer;
 
-Renderer& ParticleSystem::GetRenderer()
+Renderer &ParticleSystem::GetRenderer()
 {
-   return theRenderer;
+    return theRenderer;
 }
 
 ParticleSystem::ParticleSystem()
 {
-   mBlendMode = ADD;
-   mTexture = -1;
-   object_texture = -1;
-   fire_texture = -1;
-   smoke_texture = -1;
-   piece_texture = -1;
-   count = 0;
+    mBlendMode = ADD;
+    mTexture = -1;
+    object_texture = -1;
+    fire_texture = -1;
+    smoke_texture = -1;
+    piece_texture = -1;
+    count = 0;
 }
 
 ParticleSystem::~ParticleSystem()
@@ -34,18 +34,18 @@ void ParticleSystem::set_delay_count(int count2)
 
 void ParticleSystem::init(int size)
 {
-   if (!theRenderer.initialized())
-   {
-      theRenderer.init("../shaders/billboard.vs", "../shaders/billboard.fs");
-   }
-   //createObject();
-   createParticles(size);
+    if (!theRenderer.initialized())
+    {
+        theRenderer.init("shaders/billboard.vs", "shaders/billboard.fs");
+    }
+    // createObject();
+    createParticles(size);
 }
 
 void ParticleSystem::draw_object()
 {
     theRenderer.begin(object_texture, mBlendMode);
-    
+
     Particle particle = mParticles[0];
     theRenderer.quad(particle.pos, particle.color, particle.size);
 }
@@ -60,14 +60,14 @@ void ParticleSystem::delete_object()
     }
 }
 
-void ParticleSystem::draw_fire() 
+void ParticleSystem::draw_fire()
 {
-   theRenderer.begin(fire_texture, mBlendMode);
-   for (int i = 0; i < mParticles.size(); i++)
-   {
-      Particle particle = mParticles[i];
-      theRenderer.fire(particle.pos, particle.color, particle.size);
-   }
+    theRenderer.begin(fire_texture, mBlendMode);
+    for (int i = 0; i < mParticles.size(); i++)
+    {
+        Particle particle = mParticles[i];
+        theRenderer.fire(particle.pos, particle.color, particle.size);
+    }
 }
 
 void ParticleSystem::draw_smoke()
@@ -93,8 +93,8 @@ void ParticleSystem::draw_pieces()
 void ParticleSystem::draw()
 {
     theRenderer.begin(mTexture, mBlendMode);
-    //Particle particle = mParticles[0];
-    //theRenderer.quad(particle.pos, particle.color, particle.size);
+    Particle particle = mParticles[0];
+    theRenderer.quad(particle.pos, particle.color, particle.size);
 
     for (int i = 0; i < mParticles.size(); i++)
     {
@@ -102,4 +102,3 @@ void ParticleSystem::draw()
         theRenderer.quad(particle.pos, particle.color, particle.size);
     }
 }
-
